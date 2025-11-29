@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - MessengerApp</title>
+</head>
+<body>
+<h1>Welcome, {{ user.username }}!</h1>
+
+<!-- Показываем сообщения -->
+{% if messages %}
+    <div style="color: green; margin: 10px 0;">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div>
+    <p>Your Friend Code: <strong>{{ user.friend_code }}</strong></p>
+    <p>Share this code with friends to connect!</p>
+</div>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ ДРУГА -->
+<div style="margin: 20px 0;">
+    <h3>Add Friend</h3>
+    <form method="post" action="{% url 'add_friend' %}">
+        {% csrf_token %}
+        <input type="text" name="friend_code" placeholder="Enter friend code" style="padding: 5px;">
+        <button type="submit" style="padding: 5px 10px;">Add Friend</button>
+    </form>
+</div>
+
+<!-- СПИСОК ДРУЗЕЙ -->
+<div>
+    <h3>Your Friends</h3>
+    {% if friends %}
+        <ul>
+            {% for friend_data in friends %}
+                <li>
+                    {{ friend_data.user.username }} ({{ friend_data.user.friend_code }})
+                    <a href="{% url 'start_chat' friend_data.user.id %}" style="margin-left: 10px;">
+                        Start Chat
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p><em>No friends yet. Add someone using their friend code!</em></p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'test_chat' %}">Test Chat</a> |
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+</body>
+</html>
