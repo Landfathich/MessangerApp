@@ -4,35 +4,71 @@
     <title>MessengerApp Test</title>
 </head>
 <body>
-<h1>Simple Chat Test</h1>
+<h1>MessengerApp Chat</h1>
 
-<div id="chat" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px;"></div>
+<div id="login" style="margin-bottom: 20px;">
+    <input type="text" id="usernameInput" placeholder="Enter your username">
+    <button onclick="setUsername()">Join Chat</button>
+</div>
 
-<input type="text" id="messageInput" placeholder="Type your message..." style="width: 80%;">
-<button onclick="sendMessage()">Send</button>
+<div id="chat" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; display: none;"></div>
+
+<div id="messageInputContainer" style="margin-top: 10px; display: none;">
+    <input type="text" id="messageInput" placeholder="Type your message..." style="width: 80%;">
+    <button onclick="sendMessage()">Send</button>
+</div>
 
 <script>
     const chatDiv = document.getElementById('chat');
     const messageInput = document.getElementById('messageInput');
+    const usernameInput = document.getElementById('usernameInput');
+    const loginDiv = document.getElementById('login');
+    const messageInputContainer = document.getElementById('messageInputContainer');
 
-    // Подключаемся к WebSocket
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/');
+    let socket = null;
+    let username = null;
 
-    socket.onopen = function () {
-        addMessage('System', 'Connected to chat!');
-    };
+    function setUsername() {
+        username = usernameInput.value.trim();
+        if (username) {
+            // Скрываем логин, показываем чат
+            loginDiv.style.display = 'none';
+            chatDiv.style.display = 'block';
+            messageInputContainer.style.display = 'block';
 
-    // В функции socket.onmessage замените на:
-    socket.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        addMessage('Chat', data.message);  // Теперь будет показывать реальные сообщения
-    };
+            // Подключаемся к WebSocket
+            socket = new WebSocket('ws://' + window.location.host + '/ws/');
+
+            socket.onopen = function () {
+                addMessage('System', `Welcome, ${username}!`);
+                // Отправляем первое сообщение с именем пользователя
+                socket.send(JSON.stringify({
+                    'username': username,
+                    'message': 'joined the chat'
+                }));
+            };
+
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                addMessage('Chat', data.message);
+            };
+
+            // Отправка по Enter
+            messageInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+    }
 
     function sendMessage() {
         const message = messageInput.value;
-        if (message) {
-            socket.send(JSON.stringify({message: message}));
-            addMessage('You', message);
+        if (message && socket) {
+            socket.send(JSON.stringify({
+                'username': username,
+                'message': message
+            }));
             messageInput.value = '';
         }
     }
@@ -41,13 +77,6 @@
         chatDiv.innerHTML += `<p><strong>${sender}:</strong> ${text}</p>`;
         chatDiv.scrollTop = chatDiv.scrollHeight;
     }
-
-    // Отправка по Enter
-    messageInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
 </script>
 </body>
 </html>
