@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Главная - MessengerApp{% endblock %}
 
@@ -8,7 +9,10 @@
 
         <div class="friend-code-card">
             <p style="margin-bottom: 10px; font-size: 18px; opacity: 0.9;">Ваш уникальный код для друзей:</p>
-            <div class="friend-code">{{ user.friend_code }}</div>
+            <div class="friend-code" id="friendCode">{{ user.friend_code }}</div>
+            <button class="copy-btn" onclick="copyFriendCode()" id="copyButton">
+                📋 Копировать код
+            </button>
             <p style="margin-top: 15px; opacity: 0.8; font-size: 16px;">Отправьте этот код другу для связи</p>
         </div>
 
@@ -19,4 +23,28 @@
             <p>Нажмите "Добавить" и начните диалог!</p>
         </div>
     </div>
+
+    <script>
+        function copyFriendCode() {
+            const code = document.getElementById('friendCode').textContent;
+            const button = document.getElementById('copyButton');
+
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '✓ Скопировано!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = '📋 Копировать код';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+                button.textContent = '❌ Ошибка';
+
+                setTimeout(() => {
+                    button.textContent = '📋 Копировать код';
+                }, 2000);
+            });
+        }
+    </script>
 {% endblock %}
