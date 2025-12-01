@@ -3,16 +3,20 @@
 {% block title %}Главная - MessengerApp{% endblock %}
 
 {% block content %}
-    <div style="text-align: center; padding: 50px 20px;">
-        <h2>Добро пожаловать в MessengerApp! 🚀</h2>
-        <p style="margin: 20px 0; font-size: 16px; color: #666;">
-            Ваш код для друзей: <strong>{{ user.friend_code }}</strong>
-        </p>
-        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; max-width: 400px; margin: 0 auto;">
-            <h3>Как добавить друга?</h3>
-            <p>1. Попросите друга отправить вам его код</p>
-            <p>2. Введите код в поле "Код друга" слева</p>
-            <p>3. Нажмите "Добавить" и начните общение!</p>
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">Добро пожаловать в MessengerApp 🚀</h1>
+
+        <div class="friend-code-card">
+            <p style="margin-bottom: 10px; font-size: 18px; opacity: 0.9;">Ваш уникальный код для друзей:</p>
+            <div class="friend-code">{{ user.friend_code }}</div>
+            <p style="margin-top: 15px; opacity: 0.8; font-size: 16px;">Отправьте этот код другу для связи</p>
+        </div>
+
+        <div class="instructions">
+            <h3>Как начать общение?</h3>
+            <p>Попросите друга поделиться его кодом</p>
+            <p>Введите код в поле слева "Код друга"</p>
+            <p>Нажмите "Добавить" и начните диалог!</p>
         </div>
     </div>
 {% endblock %}
